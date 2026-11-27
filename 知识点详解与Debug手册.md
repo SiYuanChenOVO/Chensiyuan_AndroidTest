@@ -380,6 +380,46 @@ val name = intent.getStringExtra("name") ?: ""   // key 不存在返回 null →
 val age = intent.getIntExtra("age", 0)           // 原始类型必须给默认值
 ```
 
+**完整可运行例（两页跳转）**
+
+SecondActivity 布局（res/layout/activity_second.xml）：
+
+```xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvReceived"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp" />
+</LinearLayout>
+```
+
+SecondActivity.kt（接收并显示）：
+
+```kotlin
+class SecondActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_second)
+        val name = intent.getStringExtra("name") ?: "（没收到）"
+        findViewById<TextView>(R.id.tvReceived).text = "你好，$name"
+    }
+}
+```
+
+Manifest 注册（漏了必闪退 ActivityNotFoundException）：
+
+```xml
+<activity android:name=".SecondActivity" android:exported="false" />
+```
+
+> 显式 Intent 用于 App 内跳转（指明 `SecondActivity::class.java`）；隐式 Intent 靠 action 匹配（如系统分享），考试了解即可。
+
 ### 5.3 易错点与解决办法
 
 | 现象 | 原因 | 解决 |
@@ -422,6 +462,58 @@ val hobbies = mutableListOf<String>()
 if (cbSport.isChecked) hobbies.add("运动")
 if (cbRead.isChecked) hobbies.add("读书")
 tvResult.text = "姓名=$name\n性别=$gender\n爱好=${hobbies.joinToString(",")}"
+```
+
+配套表单布局（与上面取值代码一一对应）：
+
+```xml
+<EditText
+    android:id="@+id/etName"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hint="请输入姓名" />
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="性别" />
+
+<RadioGroup
+    android:id="@+id/rgGender"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <RadioButton
+        android:id="@+id/rbMale"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="男" />
+
+    <RadioButton
+        android:id="@+id/rbFemale"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="女" />
+</RadioGroup>
+
+<CheckBox
+    android:id="@+id/cbSport"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="运动" />
+
+<CheckBox
+    android:id="@+id/cbRead"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="读书" />
+
+<RatingBar
+    android:id="@+id/ratingBar"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:numStars="5" />
 ```
 
 ### 6.3 易错点与解决办法
@@ -691,6 +783,25 @@ btnSwitch.setOnLongClickListener {
     android:layout_weight="1" />
 ```
 
+Fragment 布局（fragment_a.xml：一个居中 TextView 即可，fragment_b 同理换文字）：
+
+```xml
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tvA"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:text="这是 Fragment A"
+    android:textSize="24sp" />
+```
+
+四步创建清单（背下来）：
+
+1. 写布局 `fragment_a.xml`
+2. 新建类继承 `androidx.fragment.app.Fragment`（与 MainActivity 同包同文件夹最简单）
+3. 覆写 `onCreateView`，`inflate(R.layout.fragment_a, container, false)`（第三参 false 固定）
+4. 主布局放 FrameLayout 容器 + 按钮，用事务 `replace().commit()` 切换（点击 → FragmentA，长按 → FragmentB，长按记得 `return true`）
+
 ### 10.3 易错点与解决办法
 
 | 现象 | 原因 | 解决 |
@@ -755,6 +866,54 @@ override fun onDestroy() {
 }
 ```
 
+**做法三：AsyncTask（课件必讲但已 Deprecated since Android 11，L09 第 36 页——能看懂、能按模板写即可）**
+
+泛型 `AsyncTask<Params, Progress, Result>`，四回调工作流（L09 第 33–34 页）：
+
+| 回调 | 运行线程 | 作用 |
+|---|---|---|
+| `onPreExecute()` | UI 线程 | 后台开始前初始化（如显示进度条） |
+| `doInBackground(Params...)` | **后台线程** | 真正耗时工作；中途可调 `publishProgress(...)` |
+| `onProgressUpdate(Progress...)` | UI 线程 | 响应 publishProgress，更新进度 |
+| `onPostExecute(Result)` | UI 线程 | 完成后用结果更新 UI |
+
+```kotlin
+class MyTask : AsyncTask<Void, Int, String>() {
+    override fun doInBackground(vararg p0: Void?): String {
+        for (i in 1..10) { Thread.sleep(500); publishProgress(i * 10) }
+        return "完成"
+    }
+    override fun onProgressUpdate(vararg values: Int?) { pb.progress = values[0] ?: 0 }
+    override fun onPostExecute(result: String?) { tv.text = result }
+}
+// 调用：MyTask().execute()
+```
+（Kotlin 里泛型参数带 `?` 是 Java 平台类型的正常现象，别纠结。）
+
+**做法四：Executor（线程复用，L09 第 41 页）**
+
+```kotlin
+val executor = Executors.newSingleThreadExecutor()   // 或 newFixedThreadPool(4)
+executor.execute {
+    val r = doWork()
+    runOnUiThread { tv.text = r }
+}
+```
+
+**做法五：Kotlin 协程（官方推荐，了解）**
+
+Dispatchers：`Main`（改 UI）/ `IO`（网络、文件）/ `Default`（CPU 密集）；Builders：`launch`（后台跑）/ `async`（要返回值）/ `runBlocking`（阻塞等待）（L09 第 49–50 页）。
+
+```kotlin
+lifecycleScope.launch(Dispatchers.Main) {          // 主线程启动
+    val r = withContext(Dispatchers.IO) {          // 切到 IO 做耗时
+        Thread.sleep(2000); "下载完成"
+    }
+    tv.text = r                                     // 自动回 Main，更新 UI
+}
+```
+（依赖 `org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3`；你的作业 A04/A07 用的就是协程 + viewModelScope。）
+
 ### 11.3 易错点与解决办法
 
 | 现象 | 原因 | 解决 |
@@ -801,6 +960,70 @@ btnSave.setOnClickListener {
 }
 ```
 
+**内部文件读写（私有目录，无需权限，Storage 第 34–37 页）**
+
+```kotlin
+openFileOutput("note.txt", MODE_PRIVATE).use { it.write("你好".toByteArray()) }   // 写
+val text = openFileInput("note.txt").bufferedReader().use { it.readText() }        // 读
+```
+（`use{}` 自动关流；要处理 FileNotFoundException。）
+
+**Room（进阶：三件套 + 单例，Storage 第 56–67 页）**
+
+① Entity（一个类映射一张表）：
+
+```kotlin
+@Entity(tableName = "colors")
+data class Color(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val name: String
+)
+```
+
+② DAO（接口，SQL 在编译期校验，写错直接编译报错）：
+
+```kotlin
+@Dao
+interface ColorDao {
+    @Query("SELECT * FROM colors")
+    fun getAll(): List<Color>
+    @Insert
+    fun insert(color: Color)
+    @Delete
+    fun delete(color: Color)
+}
+```
+
+③ Database（抽象类 + 单例双检锁，Storage 第 64 页）：
+
+```kotlin
+@Database(entities = [Color::class], version = 1)
+abstract class ColorDatabase : RoomDatabase() {
+    abstract fun colorDao(): ColorDao
+    companion object {
+        @Volatile private var instance: ColorDatabase? = null
+        fun getInstance(ctx: Context): ColorDatabase =
+            instance ?: synchronized(this) {
+                instance ?: Room.databaseBuilder(
+                    ctx.applicationContext, ColorDatabase::class.java, "colors.db"
+                ).build().also { instance = it }
+            }
+    }
+}
+```
+
+④ 使用（**必须后台线程**，主线程跑 Room 直接崩溃）：
+
+```kotlin
+Thread {
+    val db = ColorDatabase.getInstance(this)
+    db.colorDao().insert(Color(name = "red"))
+    val all = db.colorDao().getAll()
+    runOnUiThread { tv.text = all.joinToString { it.name } }
+}.start()
+```
+（依赖：`androidx.room:room-runtime` + `kapt/ksp androidx.room:room-compiler`，见 Storage 第 50 页。）
+
 ### 12.3 易错点与解决办法
 
 | 现象 | 原因 | 解决 |
@@ -820,6 +1043,24 @@ btnSave.setOnClickListener {
 - **ViewModel**：专门保管 UI 数据的类，**旋转屏幕（configuration change）不丢**；生命周期 = Activity 创建 → 真正退出（返回键），由 ViewModelStore 托管（L04 第 32 页）。
 - **LiveData**：生命周期感知的可观察数据容器。规范：内部 `MutableLiveData`（私有可写），对外暴露只读 `LiveData`（L04 第 30–31、33 页）。
 - MVVM 分层：View 显示+发命令并 observe；ViewModel 持数据+逻辑；Model 取数（L04 第 25–26 页）。
+
+**原理：为什么旋转不丢（L04 第 32 页）**
+
+```
+创建 Activity → 新建 ViewModel，存进 ViewModelStore（"寄存柜"）
+        │ 旋转屏幕：Activity 销毁重建，但 ViewModelStore 还在
+重建 Activity → 从 store 取回"同一个" ViewModel，数据原样
+        │ 用户按返回键真正退出
+ViewModelStore 清理 → 调 onCleared()，此时才释放
+```
+
+**用 vs 不用 ViewModel 对比**：
+
+| | ❌ 数据放 Activity 字段 | ✅ 数据放 ViewModel |
+|---|---|---|
+| 旋转屏幕 | Activity 重建，字段归零 | 自动保留 |
+| 代码组织 | 全塞 Activity（God Activity 反模式） | View/数据分离，好维护好测试 |
+| 后台任务回来更新 UI | 容易 NPE / 内存泄漏 | LiveData 安全通知 |
 
 ### 13.2 代码操作流程
 
@@ -849,6 +1090,8 @@ onCreate 里：
 vm.count.observe(this) { c -> tv.text = "计数：$c" }   // 观察；this = LifecycleOwner
 btnAdd.setOnClickListener { vm.increment() }            // View 只发命令，不碰数据
 ```
+
+**验证（考试常考的实验步骤）**：点 +1 数到 5 → 旋转屏幕（模拟器旋转按钮或真机横竖屏）→ 数字**仍是 5**。不用 ViewModel 时 onCreate 重跑、字段归零，数字会变回 0。
 
 | API | 用途 | 参数 / 限制 |
 |---|---|---|
@@ -920,6 +1163,36 @@ btnFetch.setOnClickListener {
 | `conn.inputStream.bufferedReader().readText()` | 读全部响应 | 返回 String |
 | `JSONObject(text)` | 把文本解析成 JSON 对象 | `.getJSONObject("usd")` 取子对象、`.getDouble("rate")` 取数值、`.getString("code")` 取字符串 |
 | `JSONObject(text).getJSONArray("earthquakes")` | 解析数组 | `arr.getJSONObject(i)` 逐项取；`arr.length()` 取长度 |
+
+**JSON 语法三条（T09 第 36 页）**：数据是 `key: value` 对（逗号分隔）；`{}` 花括号 = 对象；`[]` 方括号 = 数组。
+
+floatrates 返回结构（T09 第 12 页）与取值对应：
+
+```json
+{ "usd": { "code": "USD", "rate": 0.1274 }, "eur": { "rate": 0.1119 } }
+```
+
+**数组解析例**（T09 第 13 页地震数据就是数组，考试可能考）：
+
+```kotlin
+val arr = JSONObject(text).getJSONArray("earthquakes")
+for (i in 0 until arr.length()) {
+    val m = arr.getJSONObject(i).getDouble("magnitude")
+}
+```
+
+**网络图片加载（T09 第 31–34 页）**：下载流直接解码成 Bitmap 显示。
+
+```kotlin
+Thread {
+    val conn = URL("https://developer.android.com/static/quick-guides/content/dog.png")
+        .openConnection() as HttpURLConnection
+    val bitmap = BitmapFactory.decodeStream(conn.inputStream)
+    runOnUiThread { imageView.setImageBitmap(bitmap) }
+}.start()
+```
+
+**HTTP 客户端选型（T09 第 5 页）**：机考用内置 `HttpURLConnection`（零依赖）；OkHttp（封装库）、Retrofit（官方推荐的上层框架，你的作业用过）了解即可。
 
 ### 14.3 易错点与解决办法
 
