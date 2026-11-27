@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- BMI 趋势页：自绘折线图 + 历史列表（长按弹 Context Menu） -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title_trend"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <!-- 自绘折线图控件（ui/LineChartView.kt），高度固定 220dp -->
+    <com.example.myapplication.ui.LineChartView
+        android:id="@+id/lineChart"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:layout_marginTop="8dp" />
+
+    <!-- 空数据提示 -->
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:padding="24dp"
+        android:text="@string/trend_empty"
+        android:textColor="#9E9E9E"
+        android:visibility="gone" />
+
+    <!-- 历史列表：长按某一行弹「删除/清空」 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvHistory"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1" />
+</LinearLayout>

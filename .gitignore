@@ -1,0 +1,11 @@
+# Android 构建产物与 IDE 配置不上传
+*.iml
+.gradle/
+.idea/
+build/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab

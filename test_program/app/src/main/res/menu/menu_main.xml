@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 主界面 Options Menu（右上角溢出菜单）：报告 / 趋势 / 语言切换 / 清空历史 -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_report"
+        android:title="@string/menu_report"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_trend"
+        android:title="@string/menu_trend"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_language"
+        android:title="@string/menu_language"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_clear"
+        android:title="@string/menu_clear"
+        app:showAsAction="never" />
+</menu>

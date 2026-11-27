@@ -1,0 +1,67 @@
+<resources>
+    <!-- ============================================================
+         英文为默认资源（res/values/strings.xml）
+         中文在 res/values-zh/strings.xml，系统按语言自动选择
+         （Assignment03 中英双语；菜单里一键切换）
+         ============================================================ -->
+    <string name="app_name">BMI Calculator</string>
+
+    <!-- 主界面表单 -->
+    <string name="hint_height">Height (cm)</string>
+    <string name="hint_weight">Weight (kg)</string>
+    <string name="hint_age">Age (years)</string>
+    <string name="label_gender">Gender</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="btn_calculate">Calculate BMI</string>
+    <string name="error_invalid">Please enter valid numbers (height > 0, weight > 0, age > 0)</string>
+    <string name="toast_need_calc">Please calculate BMI first</string>
+    <string name="result_bmi">BMI: %1$.2f</string>
+    <string name="result_meta">Age %1$d · %2$s</string>
+
+    <!-- 警示设计（严重偏低/偏高） -->
+    <string name="warning_dialog_title">Health Warning</string>
+    <string name="warning_dialog_msg">Your BMI is in the critical range. Please consider consulting a doctor.</string>
+
+    <!-- 主菜单（Options Menu） -->
+    <string name="menu_report">Health Report</string>
+    <string name="menu_trend">BMI Trend</string>
+    <string name="menu_language">中文 / English</string>
+    <string name="menu_clear">Clear History</string>
+    <string name="confirm_clear">Delete ALL BMI records?</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- 报告页（LLM） -->
+    <string name="title_report">Health Report (LLM)</string>
+    <string name="btn_ask">Get Suggestions</string>
+    <string name="btn_settings">API Settings</string>
+    <string name="report_idle">Tap \'Get Suggestions\' to ask the LLM for health advice based on your latest BMI.</string>
+    <string name="loading">Asking LLM...</string>
+    <string name="llm_no_config">API key not set. Tap \'API Settings\' first.</string>
+    <string name="llm_auth">Auth failed: check API key or account balance.</string>
+    <string name="llm_rate">Rate limited. Please retry later.</string>
+    <string name="llm_server">Server error. Please retry later.</string>
+    <string name="llm_network">Network error. Check your connection.</string>
+    <string name="llm_empty">Empty response from LLM.</string>
+    <string name="settings_key_hint">API Key</string>
+    <string name="settings_model_hint">Model name</string>
+    <string name="settings_saved">Saved</string>
+
+    <!-- 趋势页（SQLite + 折线图） -->
+    <string name="title_trend">BMI Trend</string>
+    <string name="chart_empty">Not enough data (need 2+ records)</string>
+    <string name="trend_empty">No records yet. Go back and calculate BMI.</string>
+    <string name="ctx_delete">Delete this record</string>
+    <string name="ctx_clear">Clear all records</string>
+
+    <!-- BMI 分级文字（BmiLevel 枚举引用） -->
+    <string name="level_severe_under">Severely Underweight</string>
+    <string name="level_under">Underweight</string>
+    <string name="level_normal">Normal</string>
+    <string name="level_over">Overweight</string>
+    <string name="level_obese">Obese</string>
+    <string name="level_severe_over">Severely Overweight</string>
+    <string name="level_no_data">Data unavailable for this age</string>
+    <string name="level_out_range">Chart supports age 6+</string>
+</resources>

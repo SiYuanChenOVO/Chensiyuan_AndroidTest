@@ -1,0 +1,66 @@
+<resources>
+    <!-- ============================================================
+         中文资源（res/values-zh/strings.xml，Assignment03）
+         App 切到中文时系统自动加载本文件，缺的 key 会回退到默认英文
+         ============================================================ -->
+    <string name="app_name">BMI 计算器</string>
+
+    <!-- 主界面表单 -->
+    <string name="hint_height">身高 (cm)</string>
+    <string name="hint_weight">体重 (kg)</string>
+    <string name="hint_age">年龄 (岁)</string>
+    <string name="label_gender">性别</string>
+    <string name="male">男</string>
+    <string name="female">女</string>
+    <string name="btn_calculate">计算 BMI</string>
+    <string name="error_invalid">请输入有效数字（身高 > 0、体重 > 0、年龄 > 0）</string>
+    <string name="toast_need_calc">请先计算一次 BMI</string>
+    <string name="result_bmi">BMI：%1$.2f</string>
+    <string name="result_meta">年龄 %1$d 岁 · %2$s</string>
+
+    <!-- 警示设计 -->
+    <string name="warning_dialog_title">健康警示</string>
+    <string name="warning_dialog_msg">BMI 处于严重偏低/偏高范围，建议咨询医生。</string>
+
+    <!-- 主菜单 -->
+    <string name="menu_report">健康报告</string>
+    <string name="menu_trend">BMI 趋势</string>
+    <string name="menu_language">中文 / English</string>
+    <string name="menu_clear">清空历史</string>
+    <string name="confirm_clear">确定删除全部 BMI 记录？</string>
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+
+    <!-- 报告页 -->
+    <string name="title_report">健康报告（LLM）</string>
+    <string name="btn_ask">生成建议</string>
+    <string name="btn_settings">API 设置</string>
+    <string name="report_idle">点击「生成建议」，让 LLM 根据你最新的 BMI 给出健康建议。</string>
+    <string name="loading">正在询问 LLM…</string>
+    <string name="llm_no_config">尚未设置 API Key，请先点击「API 设置」。</string>
+    <string name="llm_auth">鉴权失败：请检查 API Key 或账户余额。</string>
+    <string name="llm_rate">请求过于频繁，请稍后再试。</string>
+    <string name="llm_server">服务端错误，请稍后重试。</string>
+    <string name="llm_network">网络错误，请检查网络连接。</string>
+    <string name="llm_empty">LLM 返回了空内容。</string>
+    <string name="settings_key_hint">API Key</string>
+    <string name="settings_model_hint">模型名</string>
+    <string name="settings_saved">已保存</string>
+
+    <!-- 趋势页 -->
+    <string name="title_trend">BMI 趋势</string>
+    <string name="chart_empty">数据不足（至少 2 条记录）</string>
+    <string name="trend_empty">暂无记录，请先回主页计算一次 BMI。</string>
+    <string name="ctx_delete">删除该记录</string>
+    <string name="ctx_clear">清空全部记录</string>
+
+    <!-- BMI 分级文字 -->
+    <string name="level_severe_under">重度偏瘦</string>
+    <string name="level_under">偏瘦</string>
+    <string name="level_normal">正常</string>
+    <string name="level_over">超重</string>
+    <string name="level_obese">肥胖</string>
+    <string name="level_severe_over">重度超重</string>
+    <string name="level_no_data">该年龄暂无数据</string>
+    <string name="level_out_range">图表仅支持 6 岁及以上</string>
+</resources>
